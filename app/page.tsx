@@ -1,103 +1,252 @@
+"use client"
 import Image from "next/image";
+import { fontAgrandir, fontBagoss, fontSohne } from "@/public/fonts";
+import { cn } from "@/lib/utils";
+import gsap from "gsap";
+import { useEffect, useRef, useState, MutableRefObject } from "react";
+import type { Swiper as SwiperClass } from "swiper/types";
+import { useRouter } from 'next/navigation';
+import Carousel from "@/components/carousel";
+import Navbar from "@/components/navbar";
+import '../app/globals.css'
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
-export default function Home() {
+export default function Home({}) {
+  const imageRef = useRef(null);
+  const swiper = useRef<SwiperClass | null>(null);
+  const [reality, setReality] = useState(0)
+  const [firstName, setFirstName] = useState('')
+  const [email, setEmail] = useState('')
+  const [slide, setSlide] = useState(true)
+  const [nameError, setNameError] = useState("");
+  const [emailError, setEmailError] = useState("");
+
+  const handleZoomOut = () => {
+    if (imageRef.current) {
+      gsap.to(imageRef.current, { scale: 0.5, duration: 1, ease: "power2.out" });
+    }
+    setReality(1);
+  };
+
+  const handleZoomOutMore = () => {
+    if (imageRef.current) {
+      gsap.to(imageRef.current, { scale: 0.1, duration: 1, ease: "power2.out", y:"-140" });
+    }
+     setReality(2);
+  };
+
+  const handleSwiper = () => {
+    if (swiper.current && swiper.current.activeIndex !== undefined) {
+      if (swiper.current.activeIndex <= 1) {
+        swiper.current.slideNext();
+      } else if (swiper.current.activeIndex === 2) {
+        handleZoomOutMore();
+      }
+    }
+  };
+
+  useEffect(()=>{
+    if (imageRef.current && reality === 0) {
+      gsap.to(imageRef.current, { scale: 1, duration: 1, ease: "power2.out" });
+    }
+    if (imageRef.current && reality === 1) {
+      gsap.to(imageRef.current, { scale: 0.5, duration: 1, ease: "power2.out", y:'0%'});
+    }
+  },[reality])
+
+  const validateName = (name: string) => {
+    if (!name.trim()) return "Name is required.";
+    if (!/^[a-zA-Z\s'-]+$/.test(name)) return "Name must contain only letters.";
+    return "";
+  };
+
+  const validateEmail = (email: string) => {
+    if (!email.trim()) return "Email is required.";
+    // Simple email regex
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "Invalid email address.";
+    return "";
+  };
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
+    <>
+      <div
+        className={`wrapper px-8 ${
+          swiper.current && swiper.current.activeIndex === 0 ? "bg-bg" : "bg-animate"
+        }`}
+      >
+        <Navbar
+          reality={reality}
+          setReality={setReality}
+          swiperef={swiper}
+          setSlide={setSlide}
         />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+        <div
+          className={`relative h-[85%] pt-[28px] flex flex-col justify-between items-center ${cn(
+            "antialiased",
+            fontBagoss.variable
+          )} ${cn("antialiased", fontSohne.variable)}`}
+        >
+          {/* <DotLottieReact
+            id="image2"
+              src={"/JB2G_Lottie.json"}
+              loop
+              autoplay
+            /> */}
+          <div className="relative w-full">
             <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+              id="image1"
+              ref={imageRef}
+              src={"/Vector.png"}
+              alt="main vector"
+              width={274}
+              height={290}
+              className="pb-[28px] self-center m-auto"
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+           
+            {reality == 0 && (
+              <div
+                className={`absolute h-full w-full flex top-0 flex-col justify-around ${cn(
+                  "antialiased",
+                  fontSohne.variable
+                )} font-sohne text-white text-[12px]`}
+              >
+                <span>WA businesses feel confident about future growth </span>
+                <span className="self-end">AI cant replace creativity</span>
+                <span>Sales measure true success</span>
+                <span className="self-end">
+                  Human connection drives WA business
+                </span>
+                <span>
+                  The primary barrier to digital <br /> transformation is
+                  financial investment
+                </span>
+              </div>
+            )}
+          </div>
+
+          {reality === 0 ? (
+            <span className="font-bagoss text-white text-[28px] mb-[24px] font-[400] leading-[120%] text-center">
+              Compare your thoughts on
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FABBFF] via-[#B179FF] to-[#6DDDFF]">
+                {" "}
+                technology
+              </span>{" "}
+              with current industry opinions.
+            </span>
+          ) : reality === 1 ? (
+            <Carousel swiperRef={swiper} />
+          ) : reality == 2 ? (
+            <span className="absolute top-[20%] text-[19px] text-white font-bagoss text-center font-[400]">
+              Let’s start with the basics. Type in your <br /> first name.
+            </span>
+          ) : reality == 3 ? (
+            <span className="absolute top-[20%] text-[19px] text-white font-bagoss text-center font-[400]">
+              How should we contact you? Type in <br />
+              your email address.
+            </span>
+          ) : (
+            reality == 4 && (
+              <span className="absolute top-[20%] text-[19px] text-white font-bagoss text-center font-[400]">
+                Thanks, {firstName}! Now, it’s time to get a<br /> reality
+                check.
+                <br /> <br />
+                 This will take 2-3 minutes.
+              </span>
+            )
+          )}
+
+          {reality < 2 || reality > 3 ? (
+            <button
+              className={`w-full py-[24px] my-[24px] text-[16px] leading-[135%] rounded-[19px] font-[400] !font-sohne ${
+                reality === 1
+                  ? "bg-transparent border-2 text-white"
+                  : reality === 0
+                  ? "bg-btn"
+                  : swiper.current && swiper.current.activeIndex === 2
+                  ? "bg-white text-black shadow-[0px_0px_0px_9px_#FFFFFF57]"
+                  : ""
+              }`}
+              onClick={!reality ? handleZoomOut : handleSwiper}
+            >
+              {reality ? "Continue" : "Get a reality check"}
+            </button>
+          ) : reality === 2 ? (
+            <div className="relative w-full">
+              <div className="absolute top-4 left-3">
+                <i className="fa fa-search text-gray-400 z-20 hover:text-gray-500"></i>
+              </div>
+              <input
+              id="myInput"
+                type="text"
+                className="h-14 mb-[8px] w-full border-1 p-[14px] rounded-[18px] z-0 placeholder-gray-400 text-[16px] font-[400] font-sohne text-[#FFFFFF]"
+                placeholder="First name" 
+                onChange={(e) => {
+                  setFirstName(e.target.value);
+                  setNameError("");
+                }}
+                value={firstName}
+              />
+              {nameError && <div className="text-red-400 text-xs mb-2 ml-2">{nameError}</div>}
+              <div className="absolute top-3 right-2">
+                <Image
+                  alt="submit"
+                  src={"./Icon.svg"}
+                  width={31}
+                  height={31}
+                  className=" text-white rounded-lg m-auto"
+                  onClick={() => {
+                    const err = validateName(firstName);
+                    if (err) {
+                      setNameError(err);
+                    } else {
+                      setNameError("");
+                      setFirstName("");
+                      setReality(3);
+                    }
+                  }}
+                />
+              </div>
+            </div>
+          ) : reality === 3 && (
+          <div className="relative w-full">
+          <div className="absolute top-4 left-3">
+            <i className="fa fa-search text-gray-400 z-20 hover:text-gray-500"></i>
+          </div>
+          <input
+          id="myInput"
+            type="email"
+            className="h-14 mb-[8px] w-full border-1 p-[14px] rounded-[18px] z-0 placeholder-gray-400 text-[16px] font-[400] font-sohne text-[#FFFFFF]"
+            placeholder="Email address"
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setEmailError("");
+            }}
+            value={email}
+          />
+          {emailError && <div className="text-red-400 text-xs mb-2 ml-2">{emailError}</div>}
+          <div className="absolute top-3 right-2">
+            <Image
+              alt="submit"
+              src={"./Icon.svg"}
+              width={31}
+              height={31}
+              className=" text-white rounded-lg m-auto"
+              onClick={() => {
+                const err = validateEmail(email);
+                if (err) {
+                  setEmailError(err);
+                } else {
+                  setEmailError("");
+                  setEmail("");
+                  setReality(4);
+                }
+              }}
+            />
+          </div>
+          </div>
+          )}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </div>
+    </>
   );
 }
