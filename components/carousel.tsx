@@ -10,9 +10,11 @@ import { cn } from "@/lib/utils";
 import { useSwiper } from "swiper/react";
 import { Pagination, Navigation, A11y } from "swiper/modules";
 
+interface CarouselProps {
+  swiperRef: React.MutableRefObject<any>;
+}
 
-const Carousel = ({swiperRef}) => {
-  
+const Carousel: React.FC<CarouselProps> = ({ swiperRef }) => {
 
   return (
 
