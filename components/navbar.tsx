@@ -11,7 +11,7 @@ import {useRef, useLayoutEffect, useEffect} from "react";
 
 
 
-export default function Navbar(props) {
+export default function Navbar(props:any) {
 
     const juiceboxRef = useRef<HTMLAnchorElement>(null);
     const textRef = useRef<HTMLSpanElement>(null);
